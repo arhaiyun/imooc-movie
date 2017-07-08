@@ -40,20 +40,6 @@ Best Practice
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - 2017.07.08
 1.package.json  (npm init)
 2. 
