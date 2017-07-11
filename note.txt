@@ -55,7 +55,7 @@ http://localhost:3000/admin/list
 
 [豆瓣IDList]
 26920269
-
+1292720 - Forrest Gump
 
 
 

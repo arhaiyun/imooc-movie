@@ -1,20 +1,17 @@
-$(function() {
-	$('.del').click(function(e) {
-		var target = $(e.target)
-		var id = target.data('id')
-		console.log("id:" + id)
-		var tr = $('.item-id-' + id)
-
-		$.ajax({
-			type: 'DELETE',
-			url: '/admin/list?id=' + id
-		})
-		.done(function(results) {
-			if(results.success === 1) {
-				if(tr.length > 0) {
-					tr.remove()
-				}
-			}
-		})
-	})
-})
+$(function () {
+    $('.del').click(function () {
+        if(confirm(('delete sure ?'))) {
+            var $this = $(this);
+            var id = $this.data('id');
+            $.ajax({
+                type: 'DELETE',
+                url: '/admin/movie/list',
+                data: {id: id}
+            }).done(function (results) {
+                if(results.success == 1) {
+                    $this.parents('tr').remove();
+                }
+            })
+        };
+    });
+});
