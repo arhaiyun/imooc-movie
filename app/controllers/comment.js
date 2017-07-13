@@ -21,7 +21,7 @@ exports.save = function(req, res) {
           console.log(err)
         }
 
-        res.redirect('/movie/' + movieId)
+        res.redirect('/admin/movie/' + movieId)
       })
     })
   }
@@ -33,7 +33,7 @@ exports.save = function(req, res) {
         console.log(err)
       }
 
-      res.redirect('/movie/' + movieId)
+      res.redirect('/admin/movie/' + movieId)
     })
   }
 }

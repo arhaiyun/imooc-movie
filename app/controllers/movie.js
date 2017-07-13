@@ -95,10 +95,7 @@ exports.save = function(req, res) {
     movieObj.poster = req.poster
   }
 
-  console.log('-------- id' + id)
-
   if (id) {
-
     Movie.findById(id, function(err, movie) {
       if (err) {
         console.log(err)
@@ -110,7 +107,7 @@ exports.save = function(req, res) {
           console.log(err)
         }
 
-        res.redirect('/movie/' + movie._id)
+        res.redirect('/admin/movie/' + movie._id)
       })
     })
   }
@@ -129,7 +126,7 @@ exports.save = function(req, res) {
           category.movies.push(movie._id)
 
           category.save(function(err, category) {
-            res.redirect('/movie/' + movie._id)
+            res.redirect('/admin/movie/' + movie._id)
           })
         })
       }
@@ -142,7 +139,7 @@ exports.save = function(req, res) {
         category.save(function(err, category) {
           movie.category = category._id
           movie.save(function(err, movie) {
-            res.redirect('/movie/' + movie._id)
+            res.redirect('/admin/movie/' + movie._id)
           })
         })
       }
@@ -152,6 +149,7 @@ exports.save = function(req, res) {
 
 // list page
 exports.list = function(req, res) {
+  console.log('------- now in movie.list')
   Movie.find({})
     .populate('category', 'name')
     .exec(function(err, movies) {
@@ -169,6 +167,7 @@ exports.list = function(req, res) {
 // list page
 exports.del = function(req, res) {
   var id = req.query.id
+  console.log('-----------now in category.del, id:' + id)
 
   if (id) {
     Movie.remove({_id: id}, function(err, movie) {
