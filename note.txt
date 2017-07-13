@@ -38,6 +38,9 @@ Best Practice
 
 
 
+npm install async bcrypt connect-mongo crypto express grunt grunt-concurrent grunt-contrib-jshint grunt-contrib-less grunt-contrib-uglify grunt-contrib-watch grunt-mocha-test grunt-nodemon jade moment mongoose underscore --save
+npm install body-parser cookie-parser express-session connet-multiparty --save
+
 
 
 - 2017.07.08
@@ -56,7 +59,7 @@ http://localhost:3000/admin/list
 [豆瓣IDList]
 26920269
 1292720 - Forrest Gump
-
+1418200 - Pride&Prejudice
 
 
 [code archive]

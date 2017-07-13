@@ -1,52 +1,60 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
+var ObjectId = Schema.Types.ObjectId
 
-var MovieSchema = new mongoose.Schema({
-    director: String,
-    title: String,
-    language: String,
-    country: String,
-    summary: String,
-    flash: String,
-    poster: String,
-    year: Number,
-    meta: {
-        createAt: {
-            type: Date,
-            default: Date.now()
-        },
-        updateAt: {
-            type: Date,
-            default: Date.now()
-        }
+var MovieSchema = new Schema({
+  director: String,
+  title: String,
+  language: String,
+  country: String,
+  summary: String,
+  flash: String,
+  poster: String,
+  year: Number,
+  pv: {
+    type: Number,
+    default: 0
+  },
+  category: {
+    type: ObjectId,
+    ref: 'Category'
+  },
+  meta: {
+    createAt: {
+      type: Date,
+      default: Date.now()
+    },
+    updateAt: {
+      type: Date,
+      default: Date.now()
     }
-}, {collection: 'movie'});
-
-/**
- * 每次存储数据save之前调用
- */
-MovieSchema.pre('save', function (next) {
-    if (this.isNew) {
-        this.meta.createAt = this.meta.updateAt = Date.now()
-    } else {
-        this.meta.updateAt = Date.now()
-    };
-    next();
+  }
 })
 
+// var ObjectId = mongoose.Schema.Types.ObjectId
+MovieSchema.pre('save', function(next) {
+  if (this.isNew) {
+    this.meta.createAt = this.meta.updateAt = Date.now()
+  }
+  else {
+    this.meta.updateAt = Date.now()
+  }
+
+  next()
+})
 
 MovieSchema.statics = {
-    fetch: function (cb) {
-        return this
-            .find({})
-            .sort('meta.updateAt')
-            .exec(cb)
-    },
-    findById: function (id, cb) {
-        return this
-            .findOne({_id: id})
-            .sort('meta.updateAt')
-            .exec(cb)
-    }
-};
+  fetch: function(cb) {
+    return this
+      .find({})
+      .sort('meta.updateAt')
+      .exec(cb)
+  },
+  findById: function(id, cb) {
+    return this
+      .findOne({_id: id})
+      .exec(cb)
+  }
+}
 
-module.exports = MovieSchema;
+module.exports = MovieSchema

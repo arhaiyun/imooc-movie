@@ -4,57 +4,75 @@
  * time: 2017.07.10
  */
 
-// include basic modules
 var express = require('express')
-var bodyParser = require('body-parser')
-var cookieParser = require('cookie-parser')
-var session = require('cookie-session')
-var morgan = require('morgan')
 var path = require('path')
 var mongoose = require('mongoose')
-
-var port = process.env.PORT || 3000 //cmd: PORT=4000 node app.js
+var port = process.env.PORT || 3000
 var app = express()
+var fs = require('fs')
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
+var session = require('express-session')
+var mongoStore = require('connect-mongo')(session)
+var logger = require('morgan')
+var serveStatic = require('serve-static')
 
 
-// DB cfg
-//mongoose.connect('mongodb://localhost/movie')
-// var dbUrl = 'mongodb://root:root@119.23.10.168:27017/movie'
-// local db for test
 var dbUrl = 'mongodb://localhost/imooc'
+
 mongoose.connect(dbUrl)
-var db = mongoose.connection
-db.on('error', console.error.bind(console, 'mongodb connection error ...'))
-db.once('open', function callback() {
-    console.info("mongodb opened ...")
-})
 
+// models loading
+var models_path = __dirname + '/app/models'
+var walk = function(path) {
+  fs
+    .readdirSync(path)
+    .forEach(function(file) {
+      var newPath = path + '/' + file
+      var stat = fs.statSync(newPath)
 
-// set views & view_engine
+      if (stat.isFile()) {
+        if (/(.*)\.(js|coffee)/.test(file)) {
+          require(newPath)
+        }
+      }
+      else if (stat.isDirectory()) {
+        walk(newPath)
+      }
+    })
+}
+walk(models_path)
+
 app.set('views', './app/views/pages')
 app.set('view engine', 'jade')
-
 app.use(bodyParser.urlencoded({
     extended: true
 }))
+app.use(bodyParser.json())
 app.use(cookieParser())
-//保持会话
 app.use(session({
-    name: 'express:sess',
-    secret: 'imooc'
+  secret: 'imooc',
+  resave: false,
+  saveUninitialized: true,
+  store: new mongoStore({
+    url: dbUrl,
+    collection: 'sessions'
+  })
 }))
 
-if('development' == app.get('env')) {//环境变量, 开发环境
-    app.set('showStackError', true)//异常信息控制台打印
-    app.use(morgan(':method   :url   :status'))
-    app.locals.pretty = true//格式化页面源码,默认压缩
-    mongoose.set('debug', true)//mongodb debug 日志输出
+var env = process.env.NODE_ENV || 'development'
+if ('development' === env) {
+  app.set('showStackError', true)
+  app.use(logger(':method :url :status'))
+  app.locals.pretty = true
+  //mongoose.set('debug', true)
 }
 
 require('./config/routes')(app)
 
 app.listen(port)
 app.locals.moment = require('moment')
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(serveStatic(path.join(__dirname, 'public')))
 
-console.log('movie started on port:' + port)
+console.log('imooc started on port ' + port)
+

@@ -1,50 +1,112 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
-    grunt.initConfig({
-        watch: {
-            jade: {
-                files: ['views/**'],
-                options: {
-                    livereload: true//重启服务,什么服务?
-                }
-            },
-            js: {
-                files: ['public/js/**', 'models/**/*.js', 'schemas/**/*.js'],
-                //tasks: ['jshint'], 语法检查
-                options: {
-                    livereload: true
-                }
-            }
-        },
-        nodemon: {
-            dev: {
-                script: 'app.js',//入口文件
-                options: {
-                    args: [],
-                    ignoredFiles: ['README.md', 'node_modules/**', 'npm-debug.log'],
-                    watchedExtensions: ['js'],
-                    watchedFolders: ['./'], //['app', 'config']
-                    debug: true,
-                    delayTime: 1,//如果有大批量文件需要编译,不会因为每个文件改动都会重启一次, 而是等待多少时间后重启服务.
-                    env: {
-                        PORT: 3000
-                    },
-                    cwd: __dirname//当前目录
-                }
-            }
-        },
-        concurrent: {//任务入口
-            tasks: ['nodemon', 'watch'],
-            options: {
-                logConcurrentOutput: true
-            }
+  grunt.initConfig({
+    watch: {
+      jade: {
+        files: ['views/**'],
+        options: {
+          livereload: true
         }
-    });
+      },
+      js: {
+        files: ['public/js/**', 'models/**/*.js', 'schemas/**/*.js'],
+        //tasks: ['jshint'],
+        options: {
+          livereload: true
+        }
+      },
+      uglify: {
+        files: ['public/**/*.js'],
+        tasks: ['jshint'],
+        options: {
+          livereload: true
+        }
+      },
+      styles: {
+        files: ['public/**/*.less'],
+        tasks: ['less'],
+        options: {
+          nospawn: true
+        }
+      }
+    },
 
-    grunt.loadNpmTasks('grunt-contrib-watch');//有文件更新, 重新执行注册的任务
-    grunt.loadNpmTasks('grunt-nodemon');//实时监听app.js入口文件
-    grunt.loadNpmTasks('grunt-concurrent');//针对于慢任务开发,如coffeescript..
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        ignores: ['public/libs/**/*.js']
+      },
+      all: ['public/js/*.js', 'test/**/*.js', 'app/**/*.js']
+    },
 
-    grunt.option('force', true);//便于开发的时候不要因为语法的错误,警告中断grunt的任务.
-    grunt.registerTask('default', ['concurrent']);//注册任务
+    less: {
+      development: {
+        options: {
+          compress: true,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          'public/build/index.css': 'public/less/index.less'
+        }
+      }
+    },
+
+    uglify: {
+      development: {
+        files: {
+          'public/build/admin.min.js': 'public/js/admin.js',
+          'public/build/detail.min.js': [
+            'public/js/detail.js'
+          ]
+        }
+      }
+    },
+
+    nodemon: {
+      dev: {
+        options: {
+          file: 'app.js',
+          args: [],
+          ignoredFiles: ['README.md', 'node_modules/**', '.DS_Store'],
+          watchedExtensions: ['js'],
+          watchedFolders: ['./'],
+          debug: true,
+          delayTime: 1,
+          env: {
+            PORT: 3000
+          },
+          cwd: __dirname
+        }
+      }
+    },
+
+    mochaTest: {
+      options: {
+        reporter: 'spec'
+      },
+      src: ['test/**/*.js']
+    },
+
+    concurrent: {
+      tasks: ['nodemon', 'watch', 'less', 'uglify', 'jshint'],
+      options: {
+        logConcurrentOutput: true
+      }
+    }
+  })
+
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-nodemon')
+  grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-mocha-test')
+  grunt.loadNpmTasks('grunt-contrib-less')
+  grunt.loadNpmTasks('grunt-contrib-uglify')
+  grunt.loadNpmTasks('grunt-contrib-jshint')
+
+  grunt.option('force', true)
+
+  grunt.registerTask('default', ['concurrent'])
+
+  grunt.registerTask('test', ['mochaTest'])
 }
