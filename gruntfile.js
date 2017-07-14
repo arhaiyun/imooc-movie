@@ -10,7 +10,6 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['public/js/**', 'models/**/*.js', 'schemas/**/*.js'],
-        //tasks: ['jshint'],
         options: {
           livereload: true
         }
@@ -96,9 +95,9 @@ module.exports = function(grunt) {
     }
   })
 
-  grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-nodemon')
-  grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-contrib-watch')   // 文件更新的监听
+  grunt.loadNpmTasks('grunt-nodemon')         // node app.js
+  grunt.loadNpmTasks('grunt-concurrent')      // 慢任务优化
   grunt.loadNpmTasks('grunt-mocha-test')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-uglify')

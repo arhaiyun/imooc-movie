@@ -30,21 +30,20 @@ module.exports = function(app) {
   app.get('/', Index.index)
 
   // User
- 
   app.get('/signin', User.showSignin)
   app.get('/signup', User.showSignup)
   app.get('/logout', User.logout)
+  app.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
   app.post('/user/signup', User.signup)
   app.post('/user/signin', User.signin)
-  app.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
 
   // Movie
   app.get('/admin/movie/new', User.signinRequired, User.adminRequired, Movie.new)
   app.get('/admin/movie/update/:id', User.signinRequired, User.adminRequired, Movie.update)
-  app.post('/admin/movie', User.signinRequired, multipartMiddleware, User.adminRequired, Movie.savePoster, Movie.save)
   app.get('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.list)
-  app.delete('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.del)
   app.get('/admin/movie/:id', Movie.detail)
+  app.post('/admin/movie', User.signinRequired, multipartMiddleware, User.adminRequired, Movie.savePoster, Movie.save)
+  app.delete('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.del)
 
   // Comment
   app.post('/user/comment', User.signinRequired, Comment.save)
@@ -57,6 +56,6 @@ module.exports = function(app) {
   app.delete('/admin/category/list', User.signinRequired, User.adminRequired, Category.del)
   app.get('/admin/category/:id', Category.detail)
 
-  // results
+  // search results
   app.get('/results', Index.search)
 }
